@@ -1,119 +1,65 @@
-# AdonisJS package starter kit
+# AdonisJS Supabase authorization
 
-> A boilerplate for creating AdonisJS packages
+This package lets you automatically integrate supabase to turn your adonis api into a “resource server”.
+The api will only verify the token provided by the client, authentication will have to be done beforehand by the webapp or application.
+Many articles talk about the difference between **authentication** and **authorization**, e.g. [this article](https://www.okta.com/identity-101/authentication-vs-authorization/#:~:text=What's%20the%20difference%20between%20authentication,permission%20to%20access%20a%20resource.)
 
-This repo provides you with a starting point for creating AdonisJS packages. Of course, you can create a package from scratch with your folder structure and workflow. However, using this starter kit can speed up the process, as you have fewer decisions to make.
+This package generates only the files needed for the api to manage **authorization**
 
-## Setup
+## Installation
 
-- Clone the repo on your computer, or use `giget` to download this repo without the Git history.
-  ```sh
-  npx giget@latest gh:adonisjs/pkg-starter-kit
-  ```
-- Install dependencies.
-- Update the `package.json` file and define the `name`, `description`, `keywords`, and `author` properties.
-- The repo is configured with an MIT license. Feel free to change that if you are not publishing under the MIT license.
+This package **installs only the dependencies and generates only the files required for supabase integration**. It can be removed from `package.json` once configuration is complete.
+If you don't want to use this package and do the installation yourself, you'll find a guide [here](MANUAL.md)
 
-## Folder structure
+Otherwise, you can install the package in your project
 
-The starter kit mimics the folder structure of the official packages. Feel free to rename files and folders as per your requirements.
-
-```
-├── providers
-├── src
-├── bin
-├── stubs
-├── configure.ts
-├── index.ts
-├── LICENSE.md
-├── package.json
-├── README.md
-├── tsconfig.json
-├── tsnode.esm.js
+```sh
+node ace add @killian-fal/adonisjs-supabase-auth
 ```
 
-- The `configure.ts` file exports the `configure` hook to configure the package using the `node ace configure` command.
-- The `index.ts` file is the main entry point of the package.
-- The `tsnode.esm.js` file runs TypeScript code using TS-Node + SWC. Please read the code comment in this file to learn more.
-- The `bin` directory contains the entry point file to run Japa tests.
-- Learn more about [the `providers` directory](./providers/README.md).
-- Learn more about [the `src` directory](./src/README.md).
-- Learn more about [the `stubs` directory](./stubs/README.md).
+or with npm:
 
-### File system naming convention
+```sh
+npm i @killian-fal/adonisjs-supabase-auth
+node ace configure @killian-fal/adonisjs-supabase-auth
+```
 
-We use `snake_case` naming conventions for the file system. The rule is enforced using ESLint. However, turn off the rule and use your preferred naming conventions.
+## Usage
 
-## Peer dependencies
+To protect a route, simply use the authentication middleware:
+```ts
+import { middleware } from './kernel.js'
 
-The starter kit has a peer dependency on `@adonisjs/core@6`. Since you are creating a package for AdonisJS, you must make it against a specific version of the framework core.
+[...]
 
-If your package needs Lucid to be functional, you may install `@adonisjs/lucid` as a development dependency and add it to the list of `peerDependencies`.
+router
+  .get([...])
+  .use(middleware.auth()) // here
+```
 
-As a rule of thumb, packages installed in the user application should be part of the `peerDependencies` of your package and not the main dependency.
+or:
+```ts
+router
+  .group(() => {[...]})
+  .use([middleware.auth()])
+```
 
-For example, if you install `@adonisjs/core` as a main dependency, then essentially, you are importing a separate copy of `@adonisjs/core` and not sharing the one from the user application. Here is a great article explaining [peer dependencies](https://blog.bitsrc.io/understanding-peer-dependencies-in-javascript-dbdb4ab5a7be).
-
-## Published files
-
-Instead of publishing your repo's source code to npm, you must cherry-pick files and folders to publish only the required files.
-
-The cherry-picking uses the `files` property inside the `package.json` file. By default, we publish the following files and folders.
-
-```json
-{
-  "files": ["build/src", "build/providers", "build/stubs", "build/index.d.ts", "build/index.js"]
+Then, it is possible to get the user:
+```ts
+async foo({ auth }: HttpContext) {
+  const user = auth.getUserOrFail() // type: CustomSupabaseUser defined in the guard
+  // your logic here
 }
 ```
 
-If you create additional folders or files, mention them inside the `files` array.
+## Samples
 
-## Exports
+A list of examples is available [here](samples/) to show the possible implementations/modifications of the classes generated by the package. They also show how to test the application with a supabase mock
 
-[Node.js Subpath exports](https://nodejs.org/api/packages.html#subpath-exports) allows you to define the exports of your package regardless of the folder structure. This starter kit defines the following exports.
+1. **classic:** unmodified version of the package with tests
+2. **with-custom-details:** modified version of the package with user details, more information [here](https://supabase.com/docs/guides/auth/auth-hooks)
+3. **with-internal-profile:** modified version of the package with an internal profile (stored in a sqlite database)
+4. **with-both-and-role-based:** version combining the above 2 samples, adding a decorator to build a role access based application
 
-```json
-{
-  "exports": {
-    ".": "./build/index.js",
-    "./types": "./build/src/types.js"
-  }
-}
-```
-
-- The dot `.` export is the main export.
-- The `./types` exports all the types defined inside the `./build/src/types.js` file (the compiled output).
-
-Feel free to change the exports as per your requirements.
-
-## Testing
-
-We configure the [Japa test runner](https://japa.dev/) with this starter kit. Japa is used in AdonisJS applications as well. Just run one of the following commands to execute tests.
-
-- `npm run test`: This command will first lint the code using ESlint and then run tests and report the test coverage using [c8](https://github.com/bcoe/c8).
-- `npm run quick:test`: Runs only the tests without linting or coverage reporting.
-
-The starter kit also has a Github workflow file to run tests using Github Actions. The tests are executed against `Node.js 20.x` and `Node.js 21.x` versions on both Linux and Windows. Feel free to edit the workflow file in the `.github/workflows` directory.
-
-## TypeScript workflow
-
-- The starter kit uses [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html) for compiling the TypeScript to JavaScript when publishing the package.
-- [TS-Node](https://typestrong.org/ts-node/) and [SWC](https://swc.rs/) are used to run tests without compiling the source code.
-- The `tsconfig.json` file is extended from [`@adonisjs/tsconfig`](https://github.com/adonisjs/tooling-config/tree/main/packages/typescript-config) and uses the `NodeNext` module system. Meaning the packages are written using ES modules.
-- You can perform type checking without compiling the source code using the `npm run type check` script.
-
-Feel free to explore the `tsconfig.json` file for all the configured options.
-
-## ESLint and Prettier setup
-
-The starter kit configures ESLint and Prettier
-using our [shared config](https://github.com/adonisjs/tooling-config/tree/main/packages).
-ESLint configuration is stored within the `eslint.config.js` file.
-Prettier configuration is stored within the `package.json` file.
-Feel free to change the configuration, use custom plugins, or remove both tools altogether.
-
-## Using Stale bot
-
-The [Stale bot](https://github.com/apps/stale) is a Github application that automatically marks issues and PRs as stale and closes after a specific duration of inactivity.
-
-Feel free to delete the `.github/stale.yml` and `.github/lock.yml` files if you decide not to use the Stale bot.
+## License
+This project is Open Source software released under the [MIT license.](LICENSE.md)
