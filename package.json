@@ -62,8 +62,8 @@
     "@adonisjs/auth": "^9.3.0",
     "@adonisjs/core": "^6.2.0",
     "@supabase/supabase-js": "^2.47.10",
-    "jsonwebtoken": "^9.0.2",
-    "@types/jsonwebtoken": "^9.0.7"
+    "@types/jsonwebtoken": "^9.0.7",
+    "jsonwebtoken": "^9.0.2"
   },
   "publishConfig": {
     "access": "public",

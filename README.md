@@ -27,6 +27,7 @@ node ace configure @killian-fal/adonisjs-supabase-auth
 ## Usage
 
 To protect a route, simply use the authentication middleware:
+
 ```ts
 import { middleware } from './kernel.js'
 
@@ -38,6 +39,7 @@ router
 ```
 
 or:
+
 ```ts
 router
   .group(() => {[...]})
@@ -45,6 +47,7 @@ router
 ```
 
 Then, it is possible to get the user:
+
 ```ts
 async foo({ auth }: HttpContext) {
   const user = auth.getUserOrFail() // type: CustomSupabaseUser defined in the guard
@@ -62,4 +65,5 @@ A list of examples is available [here](samples/) to show the possible implementa
 4. **with-both-and-role-based:** version combining the above 2 samples, adding a decorator to build a role access based application - [README](samples/with-both-and-role-based/README.md)
 
 ## License
+
 This project is Open Source software released under the [MIT license.](LICENSE.md)

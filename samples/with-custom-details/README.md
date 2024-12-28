@@ -42,4 +42,5 @@ In `start/routes.ts`, the field `role: user.details.role` has been added to the 
 In `config/auth.ts`, the guard `api` has been deleted
 
 ## Note
+
 Here, a simple version has been implemented, the class architecture can be modified to match your needs

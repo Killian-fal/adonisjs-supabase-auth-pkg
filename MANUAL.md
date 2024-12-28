@@ -1,12 +1,14 @@
 # Manual class setup to support supabase
 
-## Install this dependencies:  
+## Install this dependencies:
+
 - `@adonisjs/auth`, [documentation](https://docs.adonisjs.com/guides/authentication/introduction#installation)
 - `@supabase/supabase-js`, [documentation](https://supabase.com/docs/reference/javascript/introduction)
 - `jsonwebtoken`, [package](https://www.npmjs.com/package/jsonwebtoken)
 - `@types/jsonwebtoken`, [package](https://www.npmjs.com/package/@types/jsonwebtoken)
 
 ## Copy the code below in `app/auth/guards/supabase_jwt_guard.ts`
+
 ```ts
 import { errors, symbols } from '@adonisjs/auth'
 import { AuthClientResponse, GuardContract } from '@adonisjs/auth/types'
@@ -171,6 +173,7 @@ export interface CustomSupabaseJwtPayload extends JwtPayload {
 ```
 
 ## Copy the code below in `app/utils/supabase_util.ts`
+
 ```ts
 import env from '#start/env'
 import { createClient } from '@supabase/supabase-js'
@@ -181,6 +184,7 @@ export { supabase }
 ```
 
 ## Add environment variable in `start/env.ts`
+
 ```ts
 export default await Env.create(new URL('../', import.meta.url), {
   [...]
@@ -190,6 +194,7 @@ export default await Env.create(new URL('../', import.meta.url), {
 ```
 
 ## Update `adonisjs/auth` configuration (`config/auth.ts`)
+
 ```ts
 import { SupabaseJwtGuard } from '../app/auth/guards/supabase_jwt_guard.js'
 [...]
@@ -208,3 +213,4 @@ const authConfig = defineConfig({
 })
 
 export default authConfig
+```

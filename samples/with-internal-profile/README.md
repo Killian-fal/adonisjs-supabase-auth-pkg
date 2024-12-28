@@ -21,4 +21,5 @@ In `start/routes.ts`, the field `name: user.profile.fullName` has been added to 
 Add a test in `tests/functional/auth.sec.ts`
 
 ## Note
+
 Here, a simple version has been implemented, the class architecture can be modified to match your needs
